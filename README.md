@@ -7,7 +7,7 @@
 | 类型 | 说明 | 示例输入 |
 |------|------|----------|
 | TOTP | RFC 6238 动态验证码 | `secret: JBSWY3DPPHPDXV6T` 或含 `otpauth://totp/` 的 URI |
-| HOTP | RFC 4224 计数器验证码 | 同上 + 计数器 |
+| HOTP | RFC 4226 计数器验证码 | 同上 + 计数器 |
 | otpauth URI | 2FA 应用二维码内容 | `otpauth://totp/Example:alice?secret=...&period=30` |
 | Base32 | 密钥 Base32 解码 | `JBSWY3DPPHPDXV6T` → 原始字节 |
 | URL 编码 | URLDecoder | `%3Cscript%3E` → `<script>` |
