@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tfa-decode"
+version = "0.1.0"
+description = "2FA 一键解码：自动识别 TOTP/HOTP/otpauth URI/Base32/URL 编码/HTML 实体/Base64/明文。"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "TSVMV" }]
+keywords = ["2fa", "totp", "hotp", "otpauth", "base32", "mfa", "authenticator"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = []
+
+[project.scripts]
+tfa-decode = "decode:main"
+
+[project.urls]
+Repository = "https://github.com/TSVMV/tfa-decode"
+
+[tool.setuptools]
+py-modules = ["decode"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+addopts = "-q"

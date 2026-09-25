@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """2FA 一键解码工具 — 自动识别 TOTP/HOTP/otpauth URI/Base32/URL 编码/HTML 实体/Base64/明文。
 
 无第三方依赖，Python 3.9+。
 """
+
+from __future__ import annotations
 
 import argparse
 import base64
@@ -15,7 +16,6 @@ import time
 import urllib.parse
 from dataclasses import dataclass
 from hashlib import sha1, sha256, sha512
-from typing import List, Optional
 
 # ---------- 基础解码器 ----------
 
@@ -24,7 +24,7 @@ def _pad(b32: str) -> str:
     pad = (-len(b32)) % 8
     return b32 + "=" * pad
 
-def base32_decode(s: str) -> Optional[bytes]:
+def base32_decode(s: str) -> bytes | None:
     """标准 Base32（RFC 4648）解码，容忍缺失的填充与大小写。失败返回 None。"""
     s = s.strip().upper()
     if not s or len(s) < 5:
@@ -37,7 +37,7 @@ def base32_decode(s: str) -> Optional[bytes]:
     except Exception:
         return None
 
-def base64_url_decode(s: str) -> Optional[bytes]:
+def base64_url_decode(s: str) -> bytes | None:
     s = s.strip()
     if not s:
         return None
@@ -79,7 +79,7 @@ def hotp(secret: bytes, counter: int, digits: int, algo: str = "SHA1") -> str:
     code = (struct.unpack(">I", h[off:off + 4])[0] & 0x7FFFFFFF) % (10 ** digits)
     return str(code).zfill(digits)
 
-def totp(secret: bytes, period: int = 30, digits: int = 6, algo: str = "SHA1", ts: Optional[float] = None) -> str:
+def totp(secret: bytes, period: int = 30, digits: int = 6, algo: str = "SHA1", ts: float | None = None) -> str:
     ts = time.time() if ts is None else ts
     return hotp(secret, int(ts // period), digits, algo)
 
@@ -94,7 +94,7 @@ class OtpAuth:
     period: int = 30
     digits: int = 6
     algorithm: str = "SHA1"
-    counter: Optional[int] = None
+    counter: int | None = None
     raw: str = ""
 
     @property
@@ -139,7 +139,7 @@ class DecodeResult:
 
 # ---------- 自动识别 ----------
 
-def detect_and_decode(raw: str, args) -> List[DecodeResult]:
+def detect_and_decode(raw: str, args) -> list[DecodeResult]:
     s = raw.strip()
     if not s:
         return []
@@ -247,7 +247,7 @@ def _decode_otpauth(uri: str, args) -> DecodeResult:
 
 BAR = "=" * 64
 
-def render(res_list: List[DecodeResult]) -> None:
+def render(res_list: list[DecodeResult]) -> None:
     if not res_list:
         print("(空输入)")
         return
@@ -282,11 +282,11 @@ def resolve_algorithm(args) -> str:
         return "SHA1"
     return "SHA1"  # 默认
 
-def load_inputs(args) -> List[str]:
+def load_inputs(args) -> list[str]:
     if args.file:
         out = []
         for p in args.inputs:
-            with open(p, "r", encoding="utf-8") as f:
+            with open(p, encoding="utf-8") as f:
                 out.extend(line for line in (ln.strip() for ln in f) if line)
         return out
     out = list(args.inputs)
@@ -294,7 +294,7 @@ def load_inputs(args) -> List[str]:
     if len(out) == 1:
         p = out[0]
         try:
-            with open(p, "r", encoding="utf-8") as f:
+            with open(p, encoding="utf-8") as f:
                 out = [ln for ln in (ln.strip() for ln in f) if ln]
         except OSError:
             pass
@@ -320,5 +320,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     # 模块别名：保持 detect_and_decode 在 -m 入口下也可用
-    import __main__
     sys.exit(main())
